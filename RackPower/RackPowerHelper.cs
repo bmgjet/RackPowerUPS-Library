@@ -86,7 +86,7 @@ namespace RackPowerUPS
         public static string ByteToString(byte[] regs, int regIndex, int lengthRegs)
         {
             if (regs == null) { throw new ArgumentNullException(nameof(regs)); }
-            if (regIndex < 0 || regIndex + lengthRegs > regs.Length) {throw new IndexOutOfRangeException(); }
+            if (regIndex < 0 || regIndex + lengthRegs > regs.Length) { throw new IndexOutOfRangeException(); }
             return Encoding.ASCII.GetString(regs, regIndex, lengthRegs);
         }
     }
@@ -147,31 +147,34 @@ namespace RackPowerUPS
             _serialPort?.Dispose();
         }
 
-        // === Queries ===
+        public void QueryAutoDetect()
+        {
+            SendData("01044E74000166F8");
+            _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(200, 200)));
+        }
+
         public void QueryManufacturerInfo()
         {
             SendData("010327110065df50");
-            Thread.Sleep(250);
-            var frame = ModbusHelper.ParseFrame(ReadData());
+            var frame = ModbusHelper.ParseFrame(ReadDataAdaptive(250, 200));
             Model = ModbusHelper.ByteToString(frame.Data, 143, 8);
             _regs = ModbusHelper.ExtractRegisters(frame);
             BatteryCount = _regs[10];
-
-            // Version + Temps
-            SendData("01044ea3000b56c7");
-            Thread.Sleep(50);
-            _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadData()));
-            Version = _regs[7].ToString() + "." + _regs[8] + "." + _regs[9];
-            RecIGBTTemp = _regs[0] * 0.1f;
-            InvIGBTTemp = _regs[3] * 0.1f;
+            QueryVersionTemps();
         }
 
         public void QueryFullStatus()
         {
+            QueryPowerInfo();
+            QueryChargerInverterInfo();
+            QueryTemps();
+        }
+
+        public void QueryPowerInfo()
+        {
             // Power Info
             SendData("01044e210067f6c2");
-            Thread.Sleep(250);
-            _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadData()));
+            _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(300, 200)));
             BypassVoltage = _regs[0] * 0.1f;
             MainVoltage = _regs[12] * 0.1f;
             OutputVoltage = _regs[24] * 0.1f;
@@ -196,33 +199,99 @@ namespace RackPowerUPS
             RatedInputFreq = _regs[96];
             MainCurrent = _regs[15] * 0.1f;
             OutCurrent = _regs[27] * 0.1f;
+        }
 
+        public void QueryChargerInverterInfo()
+        {
             // Charger/Inverter Info
             SendData("01044e8b0003d709");
-            Thread.Sleep(25);
-            _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadData()));
+            _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(50, 100)));
             ChargerCurrent = _regs[0] * 0.1f;
             InverterVoltage = _regs[2] * 0.1f;
+        }
 
+        public void QueryTemps() //Same as QueryVersionTemps() but saves string build of Version.
+        {
             // Temps
             SendData("01044ea3000b56c7");
             Thread.Sleep(50);
-            _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadData()));
+            _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(50, 100)));
+            RecIGBTTemp = _regs[0] * 0.1f;
+            InvIGBTTemp = _regs[3] * 0.1f;
+        }
+
+        public void QueryVersionTemps()
+        {
+            // Version + Temps
+            SendData("01044ea3000b56c7");
+            _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(50, 100)));
+            Version = _regs[7].ToString() + "." + _regs[8] + "." + _regs[9];
             RecIGBTTemp = _regs[0] * 0.1f;
             InvIGBTTemp = _regs[3] * 0.1f;
         }
 
         // === Control Commands ===
-        public void ClearFaults() => SendData("016828A100FF7801");
-        public void ManualBypass() => SendData("016828A400FF6800");
-        public void ManualTransferToInverter() => SendData("016828A40001E980");
-        public void ECSManualBypass() => SendData("016828A40002A981");
+        public void ClearFaults()
+        {
+            SendData("016828A100FF7801");
+            _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(150, 100)));
+        }
+        public void ManualBypass()
+        {
+            SendData("016828A400FF6800");
+            _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(150, 100)));
+        }
+        public void ManualTransferToInverter()
+        {
+            SendData("016828A40001E980");
+            _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(150, 100)));
+        }
+        public void ECSManualBypass()
+        {
+            SendData("016828A40002A981");
+            _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(150, 100)));
+        }
 
-        public void BatteryTest() => SendData("016828A5000F3984");
-        public void BatteryMaintenance() => SendData("016828A500F079C4");
-        public void ManualFloat() => SendData("016828A5F0003D80");
-        public void ManualBoost() => SendData("016828A50F007C70");
-        public void StopTest() => SendData("016828A5FFFF7830");
+        public void BatteryTest()
+        {
+            SendData("016828A5000F3984");
+            _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(150, 100)));
+        }
+        public void BatteryMaintenance()
+        {
+            SendData("016828A500F079C4"); _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(150, 100)));
+        }
+        public void ManualFloat()
+        {
+            SendData("016828A5F0003D80"); _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(150, 100)));
+        }
+        public void ManualBoost()
+        {
+            SendData("016828A50F007C70"); _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(150, 100)));
+        }
+
+        public void StopTest()
+        {
+            SendData("016828A5FFFF7830");
+            _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(150, 100)));
+        }
+
+        public void AlarmHistory()
+        {
+            SendData("016600010006D800");
+            _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(150, 100)));
+        }
+
+        //Uknown Commands
+        //        { "01 04 4e e9 00 02 b7 17", "01 04 04 00 0a 00 0a 5b 81" }
+        //        { "01 04 00 0a 00 0c d0 0d", "01 04 18 00 02 00 01 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 5a b3" },
+        //        { "01 04 00 00 00 01 31 ca", "01 04 02 00 00 b9 30" },
+        //        { "01 03 27 76 00 04 af 67", "01 03 08 05 01 41 01 45 01 00 00 33 35" },
+        //        { "01 04 00 c9 00 03 60 35", "01 04 06 00 00 00 00 00 00 60 93" },
+        //        { "01 04 00 04 00 06 31 c9", "01 04 0c 00 00 00 00 00 00 00 00 00 00 00 00 95 b7" },
+        //        { "01 04 00 03 00 01 c1 ca", "01 04 02 00 01 78 f0" },
+        //        { "01 04 00 02 00 01 90 0a", "01 04 02 00 01 78 f0" },
+        //        { "01 04 00 01 00 01 60 0a", "01 04 02 00 01 78 f0" },
 
         public void SetBacklightTimer(int minutes)
         {
@@ -236,17 +305,36 @@ namespace RackPowerUPS
                 case 30: SendData("01682740001EEB6B"); break;
                 default: throw new ArgumentOutOfRangeException(nameof(minutes), "Valid values: 1,3,5,10,20,30");
             }
+            _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(500, 100)));
         }
 
         // === Internal Helpers ===
-        private void SendData(string hexString)
+        public void SendData(string hexString)
         {
             byte[] buffer = Enumerable.Range(0, hexString.Length / 2).Select(x => Convert.ToByte(hexString.Substring(x * 2, 2), 16)).ToArray();
             _serialPort.Write(buffer, 0, buffer.Length);
         }
 
-        private byte[] ReadData()
+        public byte[] ReadDataAdaptive(int baseDelayMs, int maxExtraMs)
         {
+            // Start with base delay
+            Thread.Sleep(baseDelayMs);
+
+            int waited = 0;
+            int lastCount = -1;
+
+            // Keep waiting in small steps until data stops increasing or cap reached
+            while (waited < maxExtraMs)
+            {
+                int count = _serialPort.BytesToRead;
+                if (count > 0 && count == lastCount)
+                    break; // no more data is coming
+
+                lastCount = count;
+                Thread.Sleep(10); // small step
+                waited += 10;
+            }
+
             int bytesToRead = _serialPort.BytesToRead;
             if (bytesToRead > 0)
             {

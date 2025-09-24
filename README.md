@@ -57,6 +57,16 @@ Queries
 - QueryFullStatus()
  Reads voltages, frequencies, load, runtime, temps, currents, etc.
 
+- QueryAutoDetect()
+
+- QueryPowerInfo()
+
+- QueryChargerInverterInfo()
+
+- QueryTemps()
+
+- QueryVersionTemps()
+
  Control
 
 - ClearFaults()
