@@ -21,26 +21,37 @@ namespace RackPowerUPS
         public static ModbusFrame ParseFrame(byte[] raw)
         {
             if (raw == null || raw.Length < 4)
-                throw new ArgumentException("Frame too short");
+                throw new ArgumentException("Frame too short", nameof(raw));
 
-            ushort rawCrc = (ushort)(raw[raw.Length - 2] | (raw[raw.Length - 1] << 8));
+            ushort rawCrc = BitConverter.ToUInt16(raw, raw.Length - 2);
             ushort calc = Crc16(raw, raw.Length - 2);
 
-            var frame = new ModbusFrame
+            return new ModbusFrame
             {
                 SlaveAddress = raw[0],
                 FunctionCode = raw[1],
+                Data = raw.Skip(2).Take(raw.Length - 4).ToArray(),
                 Crc = rawCrc,
-                CrcValid = (rawCrc == calc)
+                CrcValid = rawCrc == calc
             };
+        }
 
-            int dataLen = raw.Length - 4;
-            if (dataLen > 0)
+        public static ushort[] ExtractRegisters(ModbusFrame frame)
+        {
+            if (frame == null) throw new ArgumentNullException(nameof(frame));
+            if (frame.Data == null || frame.Data.Length < 2) return new ushort[0];
+
+            int byteCount = frame.Data[0];
+            int offset = (byteCount == frame.Data.Length - 1) ? 1 : 0;
+            int regCount = (frame.Data.Length - offset) / 2;
+
+            ushort[] regs = new ushort[regCount];
+            for (int i = 0; i < regCount; i++)
             {
-                frame.Data = new byte[dataLen];
-                Array.Copy(raw, 2, frame.Data, 0, dataLen);
+                int idx = offset + i * 2;
+                regs[i] = (ushort)((frame.Data[idx] << 8) | frame.Data[idx + 1]);
             }
-            return frame;
+            return regs;
         }
 
         public static ushort Crc16(byte[] data, int length = -1)
@@ -60,27 +71,6 @@ namespace RackPowerUPS
                 }
             }
             return crc;
-        }
-
-        public static ushort[] ExtractRegisters(ModbusFrame frame)
-        {
-            if (frame == null) throw new ArgumentNullException(nameof(frame));
-            if (frame.Data == null || frame.Data.Length == 0) return new ushort[0];
-
-            int byteCount = frame.Data[0];
-            if (byteCount <= 0 || byteCount != frame.Data.Length - 1)
-                byteCount = frame.Data.Length;
-
-            int offset = (frame.Data.Length > 0 && frame.Data[0] == byteCount) ? 1 : 0;
-            int regCount = (frame.Data.Length - offset) / 2;
-
-            var regs = new ushort[regCount];
-            for (int i = 0; i < regCount; i++)
-            {
-                int idx = offset + i * 2;
-                regs[i] = (ushort)((frame.Data[idx] << 8) | frame.Data[idx + 1]);
-            }
-            return regs;
         }
 
         public static string ByteToString(byte[] regs, int regIndex, int lengthRegs)
@@ -145,6 +135,7 @@ namespace RackPowerUPS
         {
             Close();
             _serialPort?.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         public void QueryAutoDetect()
@@ -282,16 +273,46 @@ namespace RackPowerUPS
             _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(150, 100)));
         }
 
+        public void QueryVDRStatus()
+        {
+            SendData("010400010001600a");
+            _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(150, 100)));
+        }
+
+        public void QueryStatus()
+        {
+            SendData("01040004000631c9");
+            _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(150, 100)));
+        }
+
+        public void QueryStatus2()
+        {
+            SendData("010400c900036035");
+            _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(150, 100)));
+        }
+
+        public void QueryStatus3()
+        {
+            SendData("0104000a000cd00d");
+            _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(150, 100)));
+        }
+
+        public void QueryStatus4()
+        {
+            SendData("010400030001c1ca");
+            _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(150, 100)));
+        }
+
+        public void QueryStatus5()
+        {
+            SendData("010400020001900a");
+            _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(150, 100)));
+        }
+
         //Uknown Commands
         //        { "01 04 4e e9 00 02 b7 17", "01 04 04 00 0a 00 0a 5b 81" }
-        //        { "01 04 00 0a 00 0c d0 0d", "01 04 18 00 02 00 01 00 00 00 01 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 5a b3" },
         //        { "01 04 00 00 00 01 31 ca", "01 04 02 00 00 b9 30" },
         //        { "01 03 27 76 00 04 af 67", "01 03 08 05 01 41 01 45 01 00 00 33 35" },
-        //        { "01 04 00 c9 00 03 60 35", "01 04 06 00 00 00 00 00 00 60 93" },
-        //        { "01 04 00 04 00 06 31 c9", "01 04 0c 00 00 00 00 00 00 00 00 00 00 00 00 95 b7" },
-        //        { "01 04 00 03 00 01 c1 ca", "01 04 02 00 01 78 f0" },
-        //        { "01 04 00 02 00 01 90 0a", "01 04 02 00 01 78 f0" },
-        //        { "01 04 00 01 00 01 60 0a", "01 04 02 00 01 78 f0" },
 
         public void SetBacklightTimer(int minutes)
         {
@@ -311,6 +332,9 @@ namespace RackPowerUPS
         // === Internal Helpers ===
         public void SendData(string hexString)
         {
+            if (_serialPort == null || !_serialPort.IsOpen)
+                throw new InvalidOperationException("Serial port is not open");
+
             byte[] buffer = Enumerable.Range(0, hexString.Length / 2).Select(x => Convert.ToByte(hexString.Substring(x * 2, 2), 16)).ToArray();
             _serialPort.Write(buffer, 0, buffer.Length);
         }
@@ -319,28 +343,33 @@ namespace RackPowerUPS
         {
             // Start with base delay
             Thread.Sleep(baseDelayMs);
-
-            int waited = 0;
-            int lastCount = -1;
-
-            // Keep waiting in small steps until data stops increasing or cap reached
-            while (waited < maxExtraMs)
+            if (_serialPort.IsOpen)
             {
-                int count = _serialPort.BytesToRead;
-                if (count > 0 && count == lastCount)
-                    break; // no more data is coming
+                int waited = 0;
+                int lastCount = -1;
 
-                lastCount = count;
-                Thread.Sleep(10); // small step
-                waited += 10;
-            }
+                // Keep waiting in small steps until data stops increasing or cap reached
+                while (waited < maxExtraMs)
+                {
+                    int count = _serialPort.BytesToRead;
+                    if (count > 0 && count == lastCount)
+                        break; // no more data is coming
 
-            int bytesToRead = _serialPort.BytesToRead;
-            if (bytesToRead > 0)
-            {
-                byte[] response = new byte[bytesToRead];
-                _serialPort.Read(response, 0, response.Length);
-                return response;
+                    lastCount = count;
+                    Thread.Sleep(10); // small step
+                    waited += 10;
+                }
+
+                int bytesToRead = _serialPort.BytesToRead;
+                if (bytesToRead == 0)
+                    throw new TimeoutException("No response from UPS");
+
+                if (bytesToRead > 0)
+                {
+                    byte[] response = new byte[bytesToRead];
+                    _serialPort.Read(response, 0, response.Length);
+                    return response;
+                }
             }
             return null;
         }
