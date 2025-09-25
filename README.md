@@ -33,39 +33,107 @@ class Program
             ups.Open();
 
             // Query manufacturer info
-            ups.QueryManufacturerInfo();
             Console.WriteLine($"Model: {ups.Model}, Version: {ups.Version}, Batteries: {ups.BatteryCount}");
 
             // Query full status
-            ups.QueryFullStatus();
             Console.WriteLine($"Input Voltage: {ups.MainVoltage} V");
             Console.WriteLine($"Output Voltage: {ups.OutputVoltage} V");
             Console.WriteLine($"Load: {ups.Watts} W ({ups.LoadPercent}%)");
             Console.WriteLine($"Battery: {ups.BatteryVoltage} V {ups.BatteryCapacity}%");
-
             ups.Close();
         }
     }
 }
 ```
 ## ⚡ Available Commands
-Queries
 
-- QueryManufacturerInfo()
-  Reads UPS model, version, battery count, and temps
+## Manufacturer & Firmware
 
-- QueryFullStatus()
- Reads voltages, frequencies, load, runtime, temps, currents, etc.
+| Property       | Type   | Description                                     |
+| -------------- | ------ | ----------------------------------------------- |
+| `Model`        | string | UPS model name retrieved from manufacturer info |
+| `Version`      | string | Firmware version                                |
+| `BatteryCount` | int    | Number of batteries connected                   |
 
-- QueryAutoDetect()
+---
 
-- QueryPowerInfo()
+## Power Metrics
 
-- QueryChargerInverterInfo()
+| Property             | Type  | Description                                |
+| -------------------- | ----- | ------------------------------------------ |
+| `BypassVoltage`      | float | Bypass input voltage (V)                   |
+| `MainVoltage`        | float | Main input voltage (V)                     |
+| `OutputVoltage`      | float | Output voltage (V)                         |
+| `VA`                 | float | Apparent power (VA)                        |
+| `Watts`              | float | Active power (W)                           |
+| `BatteryVoltage`     | float | Battery voltage (V)                        |
+| `BatteryCurrent`     | float | Battery current (A)                        |
+| `BatteryCapacity`    | float | Battery charge percentage (%)              |
+| `BatteryTimeRemain`  | float | Estimated battery time remaining (minutes) |
+| `BatteryTemp`        | float | Battery temperature (°C)                   |
+| `Runtime`            | float | UPS runtime (minutes)                      |
+| `BusVoltage`         | float | Internal bus voltage (V)                   |
+| `Syscode`            | float | System code (internal)                     |
+| `LoadPercent`        | float | Load percentage (%)                        |
+| `BypassFreq`         | float | Bypass input frequency (Hz)                |
+| `MainFreq`           | float | Main input frequency (Hz)                  |
+| `OutputFreq`         | float | Output frequency (Hz)                      |
+| `RatedOutputVoltage` | float | Rated output voltage (V)                   |
+| `RatedOutputFreq`    | float | Rated output frequency (Hz)                |
+| `RatedInputVoltage`  | float | Rated input voltage (V)                    |
+| `RatedInputFreq`     | float | Rated input frequency (Hz)                 |
+| `MaxWatt`            | float | Maximum output wattage (W)                 |
+| `MainCurrent`        | float | Main input current (A)                     |
+| `OutCurrent`         | float | Output current (A)                         |
+| `BypassPF`           | float | Bypass input power factor                  |
+| `MainPF`             | float | Main input power factor                    |
+| `OutputPF`           | float | Output power factor                        |
 
-- QueryTemps()
+---
 
-- QueryVersionTemps()
+## Charger & Inverter Info
+
+| Property          | Type  | Description                     |
+| ----------------- | ----- | ------------------------------- |
+| `ChargerCurrent`  | float | Charger current (A)             |
+| `InverterVoltage` | float | Inverter voltage (V)            |
+| `RecIGBTTemp`     | float | Rectifier IGBT temperature (°C) |
+| `InvIGBTTemp`     | float | Inverter IGBT temperature (°C)  |
+
+---
+
+## Switch & Output Status
+
+| Property              | Type         | Description                     |
+| --------------------- | ------------ | ------------------------------- |
+| `CurrentSwitchState`  | SwitchState  | Current switch state of the UPS |
+| `CurrentOutputStatus` | OutputStatus | Output status information       |
+| `CurrentHardware`     | HardwareType | Detected UPS hardware type      |
+| `BatteryConnected`    | bool         | Battery connection status       |
+
+---
+
+## System Status Flags
+
+| Property                | Type               | Description                                   |
+| ----------------------- | ------------------ | --------------------------------------------- |
+| `StatusFlags`           | SystemStatusFlags  | Primary system status flags                   |
+| `StatusFlags2`          | SystemStatus2Flags | Secondary system status flags                 |
+| `IsAmbientOverTemp`     | bool               | True if ambient temperature exceeds threshold |
+| `IsRecCanFail`          | bool               | True if rectifier CAN bus has failed          |
+| `IsInvIoCanFail`        | bool               | True if inverter IO CAN bus has failed        |
+| `IsInvDataCanFail`      | bool               | True if inverter data CAN bus has failed      |
+| `IsBypassPowerFuseFail` | bool               | True if bypass fuse has failed                |
+| `IsRatedKvaOverRange`   | bool               | True if rated kVA exceeds range               |
+
+---
+
+## Internal Buffers
+
+| Property         | Type   | Description                               |
+| ---------------- | ------ | ----------------------------------------- |
+| `BufferUnderRun` | int    | Internal buffer under-run counter         |
+| `UnderRunMethod` | string | Method or status causing buffer under-run |
 
  Control
 
