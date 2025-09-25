@@ -45,6 +45,8 @@ class Program
     }
 }
 ```
+There is a console client I have created here [RackPowerUPS-ConsoleClient](https://github.com/bmgjet/RackPowerUPS-ConsoleClient) 
+
 ## ⚡ Available Commands
 
 ## Manufacturer & Firmware
@@ -119,6 +121,7 @@ class Program
 | ----------------------- | ------------------ | --------------------------------------------- |
 | `StatusFlags`           | SystemStatusFlags  | Primary system status flags                   |
 | `StatusFlags2`          | SystemStatus2Flags | Secondary system status flags                 |
+| `StatusFlags3`          | SystemStatus3Flags | Extra system status flags                 |
 | `IsAmbientOverTemp`     | bool               | True if ambient temperature exceeds threshold |
 | `IsRecCanFail`          | bool               | True if rectifier CAN bus has failed          |
 | `IsInvIoCanFail`        | bool               | True if inverter IO CAN bus has failed        |

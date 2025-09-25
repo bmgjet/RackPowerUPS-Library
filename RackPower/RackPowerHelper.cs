@@ -138,6 +138,14 @@ namespace RackPowerUPS
             RatedKvaOverRange = 1 << 1  // 0x2
         }
 
+        [Flags]
+        public enum SystemStatus3Flags
+        {
+            None = 0,
+            No_IP_SCR_TmpSensor = 1 << 1, // 0x2
+            IP_SCR_Over_Temp = 1 << 2    // 0x4
+        }
+
         // UPS Values
         // === Cached Properties with EnsureFresh ===
         private string _model;
@@ -259,6 +267,9 @@ namespace RackPowerUPS
 
         private SystemStatus2Flags _statusFlags2 = SystemStatus2Flags.None;
         public SystemStatus2Flags StatusFlags2 => EnsureFresh("QueryStatus", () => _statusFlags2, QueryStatus);
+
+        private SystemStatus3Flags _statusFlags3 = SystemStatus3Flags.None;
+        public SystemStatus3Flags StatusFlags3 => EnsureFresh("QueryIPSCRStatus", () => _statusFlags3, QueryIPSCRStatus);
 
         public bool IsAmbientOverTemp => StatusFlags.HasFlag(SystemStatusFlags.AmbientOverTemp);
         public bool IsRecCanFail => StatusFlags.HasFlag(SystemStatusFlags.RecCanFail);
@@ -391,7 +402,7 @@ namespace RackPowerUPS
             {
                 // Charger/Inverter Info
                 SendData("01044e8b0003d709");
-                _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(50, 50, "QueryChargerInverterInfo")));
+                _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(60, 50, "QueryChargerInverterInfo")));
                 if (_regs == null || _regs.Length < 3) // adjust min length
                 {
                     throw new InvalidOperationException(
@@ -539,7 +550,7 @@ namespace RackPowerUPS
                 //4 EPO Batter Not Connected
                 //5 EPO
                 //6 MBCB Closed Bat Not Connected EPO
-                // MBCB Closed EPO
+                //7 MBCB Closed EPO
             }
         }
 
@@ -548,7 +559,7 @@ namespace RackPowerUPS
             lock (_sync)
             {
                 SendData("01040004000631c9");
-                _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(50, 100, "QueryStatus")));
+                _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(70, 100, "QueryStatus")));
                 int val4 = (_regs != null && _regs.Length > 4) ? _regs[4] : 0;
                 int val5 = (_regs != null && _regs.Length > 5) ? _regs[5] : 0;
                 _statusFlags = (SystemStatusFlags)val4;
@@ -583,7 +594,9 @@ namespace RackPowerUPS
             lock (_sync)
             {
                 SendData("010400c900036035");
-                _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(50, 100,"QueryIPSCRStatus")));
+                _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(60, 100,"QueryIPSCRStatus")));
+                int val1 = (_regs != null && _regs.Length > 2) ? _regs[2] : 0;
+                _statusFlags3 = (SystemStatus3Flags)val1;
                 //_regs[2] 
                 //0 Normal
                 //2 No IP SCR TmpSensor
@@ -597,25 +610,45 @@ namespace RackPowerUPS
             lock (_sync)
             {
                 SendData("0104000a000cd00d");
-                _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(50, 100, "QueryStatus3")));
+                _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(60, 100, "QueryStatus3")));
             }
         }
-
-
 
         public void QueryStatus5()
         {
             lock (_sync)
             {
                 SendData("010400020001900a");
-                _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(50, 100, "QueryStatus5")));
+                _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(60, 100, "QueryStatus5")));
             }
         }
 
-        //Uknown Commands
-        //        { "01 04 4e e9 00 02 b7 17", "01 04 04 00 0a 00 0a 5b 81" }
-        //        { "01 04 00 00 00 01 31 ca", "01 04 02 00 00 b9 30" },
-        //        { "01 03 27 76 00 04 af 67", "01 03 08 05 01 41 01 45 01 00 00 33 35" },
+        public void QueryStatus6()
+        {
+            lock (_sync)
+            {
+                SendData("01044ee90002b717");
+                _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(60, 100, "QueryStatus6")));
+            }
+        }
+
+        public void QueryStatus7()
+        {
+            lock (_sync)
+            {
+                SendData("01040000000131ca");
+                _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(60, 100, "QueryStatus7")));
+            }
+        }
+
+        public void QueryStatus8()
+        {
+            lock (_sync)
+            {
+                SendData("010327760004af67");
+                _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(60, 100, "QueryStatus8")));
+            }
+        }
 
         public void SetBacklightTimer(int minutes)
         {
