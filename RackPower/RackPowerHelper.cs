@@ -160,14 +160,26 @@ namespace RackPowerUPS
         private float _bypassVoltage;
         public float BypassVoltage => EnsureFresh("PowerInfo", () => _bypassVoltage, QueryPowerInfo);
 
+        private float _bypassCurrent;
+        public float BypassCurrent => EnsureFresh("PowerInfo", () => _bypassCurrent, QueryPowerInfo);
+
         private float _mainVoltage;
         public float MainVoltage => EnsureFresh("PowerInfo", () => _mainVoltage, QueryPowerInfo);
+
+        private float _mainVoltage2;
+        public float MainVoltage2 => EnsureFresh("PowerInfo", () => _mainVoltage2, QueryPowerInfo);
+
+        private float _mainVoltage3;
+        public float MainVoltage3 => EnsureFresh("PowerInfo", () => _mainVoltage3, QueryPowerInfo);
 
         private float _outputVoltage;
         public float OutputVoltage => EnsureFresh("PowerInfo", () => _outputVoltage, QueryPowerInfo);
 
         private float _va;
         public float VA => EnsureFresh("PowerInfo", () => _va, QueryPowerInfo);
+
+        private float _outputReactivePower;
+        public float OutputReactivePower => EnsureFresh("PowerInfo", () => _outputReactivePower, QueryPowerInfo);
 
         private float _watts;
         public float Watts => EnsureFresh("PowerInfo", () => _watts, QueryPowerInfo);
@@ -190,11 +202,47 @@ namespace RackPowerUPS
         private float _runtime;
         public float Runtime => EnsureFresh("PowerInfo", () => _runtime, QueryPowerInfo);
 
+        private float _bypassFanHour;
+        public float BypassFanHour => EnsureFresh("PowerInfo", () => _bypassFanHour, QueryPowerInfo);
+
+        private float _dustFilterDays;
+        public float DustFilterDays => EnsureFresh("PowerInfo", () => _dustFilterDays, QueryPowerInfo);
+
+        private float _dischargehours;
+        public float DischargeHours => EnsureFresh("PowerInfo", () => _dischargehours, QueryPowerInfo);
+
+        private float _dischargeamount;
+        public float DischargeAmount => EnsureFresh("PowerInfo", () => _dischargeamount, QueryPowerInfo);
+
+        private float _lockremaintime;
+        public float LockRemainTime => EnsureFresh("PowerInfo", () => _lockremaintime, QueryPowerInfo);
+
+        private float _upskey;
+        public float UPSKey => EnsureFresh("PowerInfo", () => _upskey, QueryPowerInfo);
+
+        private float _upstype;
+        public float UPSType => EnsureFresh("PowerInfo", () => _upstype, QueryPowerInfo);
+
+        private float _currentcorrectablemark;
+        public float CurrentCorrectableMark => EnsureFresh("PowerInfo", () => _currentcorrectablemark, QueryPowerInfo);
+
+        private float _inverteravgvolt;
+        public float InverterAvgVolt => EnsureFresh("PowerInfo", () => _inverteravgvolt, QueryPowerInfo);
+
+        private float _bypassavgvolt;
+        public float BypassAvgVolt => EnsureFresh("PowerInfo", () => _bypassavgvolt, QueryPowerInfo);
+
+        private float _selfagingmode;
+        public float SelfAgingMode => EnsureFresh("PowerInfo", () => _selfagingmode, QueryPowerInfo);
+
         private float _busVoltage;
         public float BusVoltage => EnsureFresh("PowerInfo", () => _busVoltage, QueryPowerInfo);
 
         private float _syscode;
         public float Syscode => EnsureFresh("PowerInfo", () => _syscode, QueryPowerInfo);
+
+        private float _ambientTemp;
+        public float AmbientTemp => EnsureFresh("PowerInfo", () => _ambientTemp, QueryPowerInfo);
 
         private float _loadPercent;
         public float LoadPercent => EnsureFresh("PowerInfo", () => _loadPercent, QueryPowerInfo);
@@ -204,6 +252,12 @@ namespace RackPowerUPS
 
         private float _mainFreq;
         public float MainFreq => EnsureFresh("PowerInfo", () => _mainFreq, QueryPowerInfo);
+
+        private float _mainFreq2;
+        public float MainFreq2 => EnsureFresh("PowerInfo", () => _mainFreq2, QueryPowerInfo);
+
+        private float _mainFreq3;
+        public float MainFreq3 => EnsureFresh("PowerInfo", () => _mainFreq3, QueryPowerInfo);
 
         private float _outputFreq;
         public float OutputFreq => EnsureFresh("PowerInfo", () => _outputFreq, QueryPowerInfo);
@@ -221,10 +275,19 @@ namespace RackPowerUPS
         public float RatedInputFreq => EnsureFresh("PowerInfo", () => _ratedInputFreq, QueryPowerInfo);
 
         private float _chargerCurrent;
-        public float ChargerCurrent => EnsureFresh("ChargerInverterInfo", () => _chargerCurrent, QueryChargerInverterInfo);
+        public float ChargerCurrent => EnsureFresh("PowerInfo", () => _chargerCurrent, QueryPowerInfo);
+
+        private float _chargerVoltage;
+        public float ChargerVoltage => EnsureFresh("PowerInfo", () => _chargerVoltage, QueryPowerInfo);
 
         private float _inverterVoltage;
-        public float InverterVoltage => EnsureFresh("ChargerInverterInfo", () => _inverterVoltage, QueryChargerInverterInfo);
+        public float InverterVoltage => EnsureFresh("PowerInfo", () => _inverterVoltage, QueryPowerInfo);
+
+        private float _fanruntime;
+        public float FanRunTime => EnsureFresh("PowerInfo", () => _fanruntime, QueryPowerInfo);
+
+        private float _capacitortime;
+        public float CapacitorTime => EnsureFresh("PowerInfo", () => _capacitortime, QueryPowerInfo);
 
         private float _recIgbtTemp;
         public float RecIGBTTemp => EnsureFresh("VersionTemps", () => _recIgbtTemp, QueryVersionTemps);
@@ -238,6 +301,12 @@ namespace RackPowerUPS
         private float _mainCurrent;
         public float MainCurrent => EnsureFresh("PowerInfo", () => _mainCurrent, QueryPowerInfo);
 
+        private float _mainCurrent2;
+        public float MainCurrent2 => EnsureFresh("PowerInfo", () => _mainCurrent2, QueryPowerInfo);
+
+        private float _mainCurrent3;
+        public float MainCurrent3 => EnsureFresh("PowerInfo", () => _mainCurrent3, QueryPowerInfo);
+
         private float _outCurrent;
         public float OutCurrent => EnsureFresh("PowerInfo", () => _outCurrent, QueryPowerInfo);
 
@@ -246,6 +315,12 @@ namespace RackPowerUPS
 
         private float _mainPF;
         public float MainPF => EnsureFresh("PowerInfo", () => _mainPF, QueryPowerInfo);
+
+        private float _mainPF2;
+        public float MainPF2 => EnsureFresh("PowerInfo", () => _mainPF2, QueryPowerInfo);
+
+        private float _mainPF3;
+        public float MainPF3 => EnsureFresh("PowerInfo", () => _mainPF3, QueryPowerInfo);
 
         private float _outputPF;
         public float OutputPF => EnsureFresh("PowerInfo", () => _outputPF, QueryPowerInfo);
@@ -275,7 +350,6 @@ namespace RackPowerUPS
         public bool IsRecCanFail => StatusFlags.HasFlag(SystemStatusFlags.RecCanFail);
         public bool IsInvIoCanFail => StatusFlags.HasFlag(SystemStatusFlags.InvIoCanFail);
         public bool IsInvDataCanFail => StatusFlags.HasFlag(SystemStatusFlags.InvDataCanFail);
-
         public bool IsBypassPowerFuseFail => StatusFlags2.HasFlag(SystemStatus2Flags.BypassPowerFuseFail);
         public bool IsRatedKvaOverRange => StatusFlags2.HasFlag(SystemStatus2Flags.RatedKvaOverRange);
 
@@ -359,57 +433,69 @@ namespace RackPowerUPS
             lock (_sync)
             {
                 // Power Info
-                SendData("01044e210067f6c2");
-                _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(260, 100, "QueryPowerInfo")));
-                if (_regs == null || _regs.Length < 101) // adjust min length
+                //SendData("01044e210067f6c2");
+                SendData("01044E210071770C"); //Read More registers
+                _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(290, 100, "QueryPowerInfo")));
+                if (_regs == null || _regs.Length < 112) // adjust min length
                 {
                     throw new InvalidOperationException(
                         $"QueryPowerInfo Unexpected register length: got {_regs?.Length ?? 0}");
                 }
                 _bypassVoltage = _regs[0] * 0.1f;
+                _bypassCurrent = _regs[3] * 0.1f;
+                _bypassFreq = _regs[6] * 0.01f;
                 _bypassPF = _regs[9] * 0.01f;
                 _mainVoltage = _regs[12] * 0.1f;
+                _mainVoltage2 = _regs[13] * 0.1f;
+                _mainVoltage3 = _regs[14] * 0.1f;
+                _mainCurrent = _regs[15] * 0.1f;
+                _mainCurrent2 = _regs[16] * 0.1f;
+                _mainCurrent3 = _regs[17] * 0.1f;
+                _mainFreq = _regs[18] * 0.01f;
+                _mainFreq2 = _regs[19] * 0.01f;
+                _mainFreq3 = _regs[20] * 0.01f;
                 _mainPF = _regs[21] * 0.01f;
+                _mainPF2 = _regs[22] * 0.1f;
+                _mainPF3 = _regs[23] * 0.1f;
                 _outputVoltage = _regs[24] * 0.1f;
+                _outCurrent = _regs[27] * 0.1f;
+                _outputFreq = _regs[30] * 0.01f;
                 _outputPF = _regs[33] * 0.01f;
                 _va = _regs[36];
                 _watts = _regs[39];
+                _outputReactivePower = _regs[42] * 0.1f;
+                _loadPercent = _regs[45] * 0.1f;
+                _ambientTemp = _regs[48] * 0.1f;
                 _batteryVoltage = _regs[49] * 0.1f;
                 _batteryCurrent = _regs[51] * 0.1f;
-                _batteryCapacity = _regs[55] * 0.1f;
                 _batteryTemp = _regs[53] * 0.1f;
                 _batteryTimeRemain = _regs[54] * 0.1f;
+                _batteryCapacity = _regs[55] * 0.1f;
+                _bypassFanHour = _regs[67];
+                _dustFilterDays = _regs[68];
                 _runtime = _regs[69] * 0.1f;
-                _busVoltage = _regs[102] * 0.1f;
-                _maxWatt = _regs[100];
+                _dischargehours = _regs[70] * 0.1f;
+                _dischargeamount = _regs[72];
+                _lockremaintime = _regs[74];
+                _upskey = _regs[75];
+                _currentHardware = (HardwareType)_regs[83];
+                _upstype = _regs[84];
+                _currentcorrectablemark = _regs[86];
+                _inverteravgvolt = _regs[87] * 0.1f;
+                _bypassavgvolt = _regs[90] * 0.1f;
                 _syscode = _regs[93];
-                _loadPercent = _regs[45] * 0.1f;
-                _bypassFreq = _regs[6] * 0.01f;
-                _mainFreq = _regs[18] * 0.01f;
-                _outputFreq = _regs[30] * 0.01f;
-                _ratedOutputVoltage = _regs[97];
-                _ratedOutputFreq = _regs[98];
+                _selfagingmode = _regs[94];
                 _ratedInputVoltage = _regs[95];
                 _ratedInputFreq = _regs[96];
-                _mainCurrent = _regs[15] * 0.1f;
-                _outCurrent = _regs[27] * 0.1f;
-            }
-        }
-
-        public void QueryChargerInverterInfo()
-        {
-            lock (_sync)
-            {
-                // Charger/Inverter Info
-                SendData("01044e8b0003d709");
-                _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(60, 50, "QueryChargerInverterInfo")));
-                if (_regs == null || _regs.Length < 3) // adjust min length
-                {
-                    throw new InvalidOperationException(
-                        $"QueryChargerInverterInfo Unexpected register length: got {_regs?.Length ?? 0}");
-                }
-                _chargerCurrent = _regs[0] * 0.1f;
-                _inverterVoltage = _regs[2] * 0.1f;
+                _ratedOutputVoltage = _regs[97];
+                _ratedOutputFreq = _regs[98];
+                _maxWatt = _regs[100];
+                _busVoltage = _regs[102] * 0.1f;
+                _chargerVoltage = _regs[104] * 0.1f;
+                _chargerCurrent = _regs[106] * 0.1f;
+                _inverterVoltage = _regs[108] * 0.1f;
+                _fanruntime = _regs[111];
+                _capacitortime = _regs[112];
             }
         }
 
@@ -518,7 +604,7 @@ namespace RackPowerUPS
             lock (_sync)
             {
                 SendData("010400010001600a");
-                _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(50, 100, "QueryOutputStatus")));
+                _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(60, 100, "QueryOutputStatus")));
                 _currentOutputStatus = (OutputStatus)_regs[0];
                 //_regs[0] 0 No Out, 1 Inverter, 2 Dieode
             }
@@ -529,7 +615,7 @@ namespace RackPowerUPS
             lock (_sync)
             {
                 SendData("010400020001900a");
-                _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(50, 100, "QueryBattCStatus")));
+                _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(60, 100, "QueryBattCStatus")));
                 _batteryConnected = _regs[0] == 1;
                 //_regs[0] 0 No Connection, 1 Connected
             }
@@ -540,7 +626,7 @@ namespace RackPowerUPS
             lock (_sync)
             {
                 SendData("010400030001c1ca");
-                _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(50, 100, "QuerySwitchesStatus")));
+                _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(60, 100, "QuerySwitchesStatus")));
                 _currentSwitchState = (SwitchState)_regs[0];
                 //_regs[0] 
                 //0 Bat Not Connected
@@ -594,7 +680,7 @@ namespace RackPowerUPS
             lock (_sync)
             {
                 SendData("010400c900036035");
-                _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(60, 100,"QueryIPSCRStatus")));
+                _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(60, 100, "QueryIPSCRStatus")));
                 int val1 = (_regs != null && _regs.Length > 2) ? _regs[2] : 0;
                 _statusFlags3 = (SystemStatus3Flags)val1;
                 //_regs[2] 
@@ -699,7 +785,7 @@ namespace RackPowerUPS
                     waited += 10;
                 }
 
-                if(waited > 10)
+                if (waited > 10)
                 {
                     BufferUnderRun++;
                     UnderRunMethod = method;
