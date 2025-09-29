@@ -160,6 +160,66 @@ There is a console client I have created here [RackPowerUPS-ConsoleClient](https
 
 - SetBacklightTimer(minutes) → Valid values: 1, 3, 5, 10, 20, 30
 
+---
+
+## Register Map
+
+The library includes a built-in **register map** (`_registerMap`) for human-readable register names.  
+
+Example:
+
+```csharp
+string name = ups.LookUpRegister(20001);  
+// "AC bypass voltage ph_A"
+
+ushort id = ups.LookUpRegister("AC output voltage ph_A");  
+// 20025
+```
+
+---
+
+
+## Error Handling
+
+- If the UPS does not respond, methods throw `TimeoutException`.
+- Unexpected register lengths raise `InvalidOperationException`.
+- CRC mismatches are flagged via `CrcValid`.
+
+---
+
+## Visualization
+
+### Communication Flow
+
+```
++-------------+       Request (Modbus RTU)        +-----------+
+|  Application| --------------------------------> |    UPS    |
+|   (C# Code) | <-------------------------------- |           |
++-------------+        Response (Registers)       +-----------+
+```
+
+### Status Flag Interpretation
+
+```
+UPS Status Flags
+ ├── PowerSupplyMode
+ │    ├── NoPowerSupply
+ │    ├── UPSPowered
+ │    └── BypassPowerSupply
+ ├── BatteryStatus
+ │    ├── Connected
+ │    ├── FloatCharge
+ │    └── EqualizeCharge
+ └── SystemStatus
+      ├── Normal
+      ├── AmbientOverTemp
+      ├── FanFailure
+      ├── InverterFault
+      └── BatteryVoltageAbnormality
+```
+
+---
+
 ## 🛠️ Technical Details
 
 Protocol: Modbus RTU
