@@ -535,13 +535,13 @@ namespace RackPowerUPS
         private float _outputFreq;
         public float OutputFreq => EnsureFresh("PowerInfo", () => _outputFreq, QueryPowerInfo);
         private float _ratedOutputVoltage;
-        public float RatedOutputVoltage => EnsureFresh("PowerInfo", () => _ratedOutputVoltage, QueryPowerInfo, runOnce: true);
+        public float RatedOutputVoltage => EnsureFresh("PowerInfo2", () => _ratedOutputVoltage, QueryPowerInfo, runOnce: true);
         private float _ratedOutputFreq;
-        public float RatedOutputFreq => EnsureFresh("PowerInfo", () => _ratedOutputFreq, QueryPowerInfo, runOnce: true);
+        public float RatedOutputFreq => EnsureFresh("PowerInfo2", () => _ratedOutputFreq, QueryPowerInfo, runOnce: true);
         private float _ratedInputVoltage;
-        public float RatedInputVoltage => EnsureFresh("PowerInfo", () => _ratedInputVoltage, QueryPowerInfo, runOnce: true);
+        public float RatedInputVoltage => EnsureFresh("PowerInfo2", () => _ratedInputVoltage, QueryPowerInfo, runOnce: true);
         private float _ratedInputFreq;
-        public float RatedInputFreq => EnsureFresh("PowerInfo", () => _ratedInputFreq, QueryPowerInfo, runOnce: true);
+        public float RatedInputFreq => EnsureFresh("PowerInfo2", () => _ratedInputFreq, QueryPowerInfo, runOnce: true);
         private float _chargerCurrent;
         public float ChargerCurrent => EnsureFresh("PowerInfo", () => _chargerCurrent, QueryPowerInfo);
         private float _chargerVoltage;
@@ -553,11 +553,11 @@ namespace RackPowerUPS
         private float _capacitortime;
         public float CapacitorTime => EnsureFresh("PowerInfo", () => _capacitortime, QueryPowerInfo);
         private float _recIgbtTemp;
-        public float RecIGBTTemp => EnsureFresh("VersionTemps", () => _recIgbtTemp, QueryVersionTemps);
+        public float RecIGBTTemp => EnsureFresh("Temps", () => _recIgbtTemp, QueryVersionTemps);
         private float _invIgbtTemp;
-        public float InvIGBTTemp => EnsureFresh("VersionTemps", () => _invIgbtTemp, QueryVersionTemps);
+        public float InvIGBTTemp => EnsureFresh("Temps", () => _invIgbtTemp, QueryVersionTemps);
         private float _maxWatt;
-        public float MaxWatt => EnsureFresh("PowerInfo", () => _maxWatt, QueryPowerInfo, runOnce: true);
+        public float MaxWatt => EnsureFresh("PowerInfo2", () => _maxWatt, QueryPowerInfo, runOnce: true);
         private float _mainCurrent;
         public float MainCurrent => EnsureFresh("PowerInfo", () => _mainCurrent, QueryPowerInfo);
         private float _mainCurrent2;
@@ -874,9 +874,9 @@ namespace RackPowerUPS
                 SendRequest(04, 20131, 10);
                 _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(65, 100, "QueryVersionTemps")));
                 if (_regs == null || _regs.Length < 10) { throw new InvalidOperationException($"QueryVersionTemps Unexpected register length: got {_regs?.Length ?? 0}"); }
-                _version = _regs[7].ToString() + "." + _regs[8] + "." + _regs[9];
                 _recIgbtTemp = _regs[0] * 0.1f;
                 _invIgbtTemp = _regs[3] * 0.1f;
+                _version = _regs[7].ToString() + "." + _regs[8] + "." + _regs[9];
             }
         }
 
