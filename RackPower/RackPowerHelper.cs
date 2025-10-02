@@ -872,7 +872,7 @@ namespace RackPowerUPS
             lock (_sync)
             {
                 SendRequest(04, 20131, 10);
-                _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(65, 100, "QueryVersionTemps")));
+                _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(75, 100, "QueryVersionTemps")));
                 if (_regs == null || _regs.Length < 10) { throw new InvalidOperationException($"QueryVersionTemps Unexpected register length: got {_regs?.Length ?? 0}"); }
                 _recIgbtTemp = _regs[0] * 0.1f;
                 _invIgbtTemp = _regs[3] * 0.1f;
