@@ -116,7 +116,7 @@ namespace RackPowerUPS
 
         private readonly object _sync = new object();
         private readonly Dictionary<string, DateTime> _lastUpdated = new Dictionary<string, DateTime>();
-        public TimeSpan _maxAge = TimeSpan.FromMilliseconds(300);
+        public TimeSpan _maxAge = TimeSpan.FromMilliseconds(285);
         private readonly Dictionary<string, ushort> _reverseMap = _registerMap.ToDictionary(kv => kv.Value, kv => kv.Key, StringComparer.OrdinalIgnoreCase);
         public static Dictionary<ushort, string> _registerMap = new Dictionary<ushort, string>
         {
@@ -771,7 +771,7 @@ namespace RackPowerUPS
             lock (_sync)
             {
                 SendRequest(03, 10001, 101);
-                var frame = ModbusHelper.ParseFrame(ReadDataAdaptive(255, 100, "QueryManufacturerInfo"));
+                var frame = ModbusHelper.ParseFrame(ReadDataAdaptive(256, 100, "QueryManufacturerInfo"));
                 _regs = ModbusHelper.ExtractRegisters(frame);
                 if (_regs == null || _regs.Length < 11) { throw new InvalidOperationException($"QueryManufacturerInfo Unexpected register length: got {_regs?.Length ?? 0}"); }
                 _model = ModbusHelper.ByteToString(frame.Data, 143, 8);
@@ -983,6 +983,7 @@ namespace RackPowerUPS
                 _regs = ModbusHelper.ExtractRegisters(ModbusHelper.ParseFrame(ReadDataAdaptive(150, 100, "ManualFloat")));
             }
         }
+
         public void ManualBoost()
         {
             lock (_sync)
